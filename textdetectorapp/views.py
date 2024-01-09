@@ -20,7 +20,6 @@ class DetectorAPI(APIView):
         DEVICE = "cpu"
         path = Path.cwd()
         model = path/'textdetectorapp'/'update_results'/'gpt2-medium-t5-base'/'Essay-ChatGPT'/method
-        print(model)
         num_labels = 2
         pos_bit = 1
 

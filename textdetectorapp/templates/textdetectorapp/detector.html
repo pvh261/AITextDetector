@@ -5,29 +5,85 @@
         <meta charset="UTF-8">
         <title>Detector</title>
         <style>
+            body {
+                height: 100vh;
+                background-image: linear-gradient(pink, cyan, pink);
+                background-repeat: no-repeat;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            header {
+                font-size: 5rem;
+                font-weight: bold;
+            }
+            #function {
+                background-color: lightgray;
+                border-radius: 5%;
+                border: 1px black solid;
+                padding: 1rem;
+                display: flex;
+                flex-direction: column;
+            }
             #text {
                 width: 500px;
                 height: 250px;
+                margin: 0 0 5px 0;
+                resize: none;
+                font-size: 1rem;
+            }
+            #file {
+                margin: 0 0 5px 0;
+            }
+            #method {
+                width: fit-content;
+                margin: 0 0 5px 0;
+                font-size: 1rem;
+            }
+            #api {
+                width: fit-content;
+                font-size: 1rem;
             }
         </style>
     </head>
     <body>
-        <textarea id="text"></textarea>
-        <select id="method">
-            <option value="OpenAI-D">OpenAI Detector</option>
-            <option value="ChatGPT-D">ChatGPT Detector</option>
-            <option value="LM-D">LM Detector</option>
-        </select>
-        <button id="api"></button>
-        <div id="result"></div>
-        <div id="message"></div>
+        <header>
+            AI TEXT DETECTOR
+        </header>
+        <main>
+            <div id="function">
+                <textarea id="text" placeholder="Input your text or upload a text file."></textarea>
+                <input id="file" type="file">
+                <select id="method">
+                    <option value="OpenAI-D">OpenAI Detector</option>
+                    <option value="ChatGPT-D">ChatGPT Detector</option>
+                    <option value="LM-D">LM Detector</option>
+                </select>
+                <button id="api">Submit</button>
+                <div id="result"></div>
+                <div id="message"></div>
+            </div>
+        </main>
+        <footer>
+
+        </footer>
         <script>
-            let body = document.getElementsByTagName('body')[0]
+            const body = document.querySelector('body')
             let text = document.getElementById('text')
+            let file = document.querySelector('#file')
             let option = document.getElementById('method')
             let button = document.getElementById('api')
             let result = document.getElementById('result')
             let message = document.getElementById('message')
+            
+            file.addEventListener('change', displayFile)
+            function displayFile() {
+                const fr = new FileReader()
+                fr.onload = function() {
+                    text.value = fr.result
+                }
+                fr.readAsText(file.files[0])
+            }
             
             function displayResult(prob) {
                 console.log(prob)

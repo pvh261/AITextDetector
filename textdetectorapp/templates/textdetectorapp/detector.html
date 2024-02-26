@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 
 <html>
@@ -35,6 +36,15 @@
             #file {
                 margin: 0 0 5px 0;
             }
+            #upload {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 0 0 5px 0;
+                height: 8rem;
+                border: black 3px dashed;
+            }
             #method {
                 width: fit-content;
                 margin: 0 0 5px 0;
@@ -54,6 +64,10 @@
             <div id="function">
                 <textarea id="text" placeholder="Input your text or upload a text file."></textarea>
                 <input id="file" type="file">
+                <div id="upload">
+                    <img src="{% static 'textdetectorapp/file_upload_icon.png' %}" height="100rem" style="margin-bottom: -1rem">
+                    <span>Drag or browse file to upload</span>
+                </div>
                 <select id="method">
                     <option value="OpenAI-D">OpenAI Detector</option>
                     <option value="ChatGPT-D">ChatGPT Detector</option>
@@ -64,9 +78,7 @@
                 <div id="message"></div>
             </div>
         </main>
-        <footer>
-
-        </footer>
+        <footer></footer>
         <script>
             const body = document.querySelector('body')
             let text = document.getElementById('text')

@@ -8,51 +8,110 @@
         <style>
             body {
                 height: 100vh;
-                background-image: linear-gradient(pink, cyan, pink);
+                background-color: rgb(30, 30, 30);
                 background-repeat: no-repeat;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                width: 100%;
+            }
+            main {
+                width: 100%;
+                display: flex;
+                justify-content: center;
             }
             header {
                 font-size: 5rem;
                 font-weight: bold;
             }
             #function {
-                background-color: lightgray;
+                background-color: white;
                 border-radius: 5%;
-                border: 1px black solid;
-                padding: 1rem;
-                display: flex;
-                flex-direction: column;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                box-shadow: white 1px 1px 10px 1px;
+                width: 50%;
+                padding: 1.5rem;
+                width: 955px;
             }
-            #text {
-                width: 500px;
+            #input-text {
+                width: 95%;
                 height: 250px;
                 margin: 0 0 5px 0;
                 resize: none;
                 font-size: 1rem;
+                background-color: whitesmoke;
+                border-radius: 4%;
             }
-            #file {
+            #browse-files {
+                background-color: rgb(30, 30, 30);
+                border-radius: 10%;
+                color: white;
+                border: 1.5px green dashed;
+                padding: 10px;
+                font-weight: bold;
                 margin: 0 0 5px 0;
+                height: fit-content;
             }
-            #upload {
+            #browse-files:hover {
+                cursor: pointer;
+                box-shadow: green 1px 1px 5px 1px;
+            }
+            #drop-area {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 margin: 0 0 5px 0;
-                height: 8rem;
-                border: black 3px dashed;
+                border: rgb(130, 130, 130) 2px dashed;
+                border-radius: 5%;
+                background-color: rgb(185, 185, 185);
+                width: 95%;
+                height: 50%;
             }
-            #method {
-                width: fit-content;
+            #method-options {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 20px;
                 margin: 0 0 5px 0;
+                width: 95%;
+            }
+            .method {
+                height: 2rem;
+                background-color: rgb(30, 30, 30);
+                border-radius: 7%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: bold;
                 font-size: 1rem;
+                color: white;
+            }
+            .method:hover {
+                cursor: pointer;
             }
             #api {
                 width: fit-content;
                 font-size: 1rem;
+                background-image: linear-gradient(to right, rgb(0, 250, 0), rgb(1, 150, 1), rgb(0, 50, 0));
+                font-weight: bold;
+                color: white;
+                border: none;
+                border-radius: 10%;
+                padding: 0.5rem 1rem 0.5rem 1rem;
+                font-size: 1.5rem;
+            }
+            @media(max-width: 1200px) {
+                #function {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    width: 50%;
+                    min-width: 500px;
+                }
+                #drop-area {
+                    height: fit-content;
+                }
             }
         </style>
     </head>
@@ -62,58 +121,111 @@
         </header>
         <main>
             <div id="function">
-                <textarea id="text" placeholder="Input your text or upload a text file."></textarea>
-                <input id="file" type="file">
-                <div id="upload">
-                    <img src="{% static 'textdetectorapp/file_upload_icon.png' %}" height="100rem" style="margin-bottom: -1rem">
-                    <span>Drag or browse file to upload</span>
+                <textarea id="input-text" placeholder="Input your text or upload a text file."></textarea>
+                <div id="drop-area">
+                    <img src="{% static 'textdetectorapp/4647438.png' %}" height="100rem" style="margin: -0.3rem 0 -0.7rem 0;">
+                    <button id="browse-files">Browse Files</button>
+                    <input id="hidden-upload-button" type="file" hidden>
+                    <span style="color: white; font-weight: bold; margin: 0 0 0.5rem 0;">Drag or browse file to upload</span>
                 </div>
-                <select id="method">
-                    <option value="OpenAI-D">OpenAI Detector</option>
-                    <option value="ChatGPT-D">ChatGPT Detector</option>
-                    <option value="LM-D">LM Detector</option>
-                </select>
-                <button id="api">Submit</button>
-                <div id="result"></div>
-                <div id="message"></div>
+                <div id="method-options">
+                    <div class="method">OpenAI Detector</div>
+                    <div class="method">ChatGPT Detector</div>
+                    <div class="method">LM Detector</div>
+                </div>
+                <div>
+                    <button id="api">Analyze</button>
+                    <div id="result"></div>
+                    <div id="message"></div>
+                </div>
             </div>
         </main>
         <footer></footer>
         <script>
             const body = document.querySelector('body')
-            let text = document.getElementById('text')
-            let file = document.querySelector('#file')
-            let option = document.getElementById('method')
+            let inputText = document.getElementById('input-text')
+            let hiddenUploadButton = document.querySelector('#hidden-upload-button')
+            let message = document.getElementById('message')
+            let dropArea = document.querySelector('#drop-area')
+            
+
+            //FILE UPLOAD
+            let browseFiles = document.getElementById('browse-files')
+            browseFiles.addEventListener('click', function() {
+                hiddenUploadButton.click()
+            })
+        
+            function displayFile(doc) {
+                const fr1 = new FileReader()
+                fr1.onload = function() {
+                    inputText.value = fr1.result
+                }
+                fr1.readAsText(doc)
+            }
+
+            hiddenUploadButton.addEventListener('change', () => {displayFile(hiddenUploadButton.files[0])})
+
+            dropArea.addEventListener('dragover', function(event) {
+                event.preventDefault()
+                console.log('drag')
+            })
+
+            dropArea.addEventListener('drop', function(event) {
+                event.preventDefault()
+                displayFile(event.dataTransfer.files[0])
+            })
+
+
+            //SELECTING METHOD
+            let methods = document.getElementsByClassName('method')
+            let selectedMethod
+            let selectedMethodDiv
+            class Method {
+                constructor(name, element) {
+                    this.name = name
+                    this.element = element
+                }
+                click() {
+                    selectedMethod = this.name
+                    if(selectedMethodDiv) {
+                        selectedMethodDiv.style.backgroundColor = 'rgb(30, 30, 30)'
+                        selectedMethodDiv.style.boxShadow = 'none'
+                    }
+                    selectedMethodDiv = this.element
+                    selectedMethodDiv.style.backgroundColor = 'black'
+                    selectedMethodDiv.style.boxShadow = 'green 1px 1px 10px 1px'
+                }
+            }
+
+            let methodObjects = []
+            for(let i = 0; i < methods.length; i++) {
+                methodObjects[i] = new Method(methods[i].textContent.replace('Detector', 'D').replace(' ', '-'), methods[i])
+            }
+
+            for(let object of methodObjects) {
+                object.element.addEventListener('click', object.click.bind(object))
+            }
+
+
+            //SUBMIT REQUEST
             let button = document.getElementById('api')
             let result = document.getElementById('result')
-            let message = document.getElementById('message')
-            
-            file.addEventListener('change', displayFile)
-            function displayFile() {
-                const fr = new FileReader()
-                fr.onload = function() {
-                    text.value = fr.result
-                }
-                fr.readAsText(file.files[0])
-            }
-            
-            function displayResult(prob) {
-                console.log(prob)
+            function displayResult(prob, method) {
                 result.textContent = 'Probability: ' + prob * 100 + '%'
+                result.style.color = 'black'
                 if(prob >= 0.5) {
                     message.textContent = 'Your text is probably generated by an AI'
                 } else {
                     message.textContent = 'Your text is probably written by a human'
                 }
+                console.log(method)
             }
 
             function fetchAPI() {
-                let input = text.value
-                let method = option.value
-                console.log(method)
+                let input = inputText.value
                 let object = {
                     content: input,
-                    method: method
+                    method: selectedMethod
                 }
                 fetch("http://localhost:8000/api", 
                 {
@@ -124,10 +236,18 @@
                     body: JSON.stringify(object),
                 })
                 .then(res => res.json())
-                .then(data => displayResult(data[0]))
+                .then(data => displayResult(data[0], data[1]))
             }
 
-            button.addEventListener('click', fetchAPI)
+            function buttonClickHandler() {
+                if(selectedMethod) {
+                    fetchAPI()
+                } else {
+                    result.textContent = 'Select A Method!'
+                    result.style.color = 'red'
+                }
+            }
+            button.addEventListener('click', buttonClickHandler)
         </script>
     </body>
 </html>

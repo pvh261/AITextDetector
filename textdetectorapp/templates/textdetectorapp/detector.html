@@ -5,9 +5,22 @@
       <meta charset="UTF-8">
       <title>Detector</title>
       <style>
+         @font-face {
+            font-family: Varelmo;
+            src: url("{% static 'textdetectorapp/Varelmo.ttf' %}");
+         }
+         @font-face {
+            font-family: VanillaExtract;
+            src: url("{% static 'textdetectorapp/VanillaExtractRegular.ttf' %}");
+         }
+         * {
+            font-family: VanillaExtract;
+            font-weight: bolder;
+         }
          body {
+            background-image: url("{% static 'textdetectorapp/blue-concrete-texture.jpg' %}");
+            background-size: cover;
             height: 100vh;
-            background-color: rgb(30, 30, 30);
             background-repeat: no-repeat;
             display: flex;
             flex-direction: column;
@@ -15,46 +28,55 @@
             width: 100%;
          }
          main {
+            height: fit-content;
             width: 100%;
             display: flex;
             justify-content: center;
+            margin: 5rem 0 0 0;
          }
          header {
             font-size: 5rem;
-            font-weight: bold;
+            font-family: Varelmo;
+            background-image: linear-gradient(white, rgb(0, 137, 205));
+            -webkit-background-clip: text;
+            color: transparent;
+            box-shadow: cyan 1px 1px 5px 1px;
+            margin: 0 0 1rem 0;
          }
          #function {
-            background-color: white;
-            border-radius: 5%;
+            border-radius: 2rem;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            box-shadow: white 1px 1px 10px 1px;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: 1fr 0.5fr 0.25fr;
+            box-shadow: cyan 1px 1px 10px 1px;
             width: 50%;
             padding: 1.5rem;
             width: 955px;
+            background-image: linear-gradient(rgb(255, 255, 255), rgb(162, 255, 253))
          }
          #input-text {
             width: 95%;
-            height: 250px;
+            height: 300px;
             margin: 0 0 5px 0;
             resize: none;
             font-size: 1rem;
             background-color: whitesmoke;
-            border-radius: 4%;
+            border-radius: 1rem;
+            grid-column: 1;
+            grid-row: 1/3;
          }
          #browse-files {
             background-color: rgb(30, 30, 30);
-            border-radius: 10%;
+            border-radius: 1rem;
             color: white;
-            border: 1.5px green dashed;
+            border: 1.5px cyan dashed;
             padding: 10px;
-            font-weight: bold;
             margin: 0 0 5px 0;
             height: fit-content;
          }
          #browse-files:hover {
             cursor: pointer;
-            box-shadow: green 1px 1px 5px 1px;
+            box-shadow: cyan 1px 1px 5px 1px;
          }
          #drop-area {
             display: flex;
@@ -63,27 +85,31 @@
             align-items: center;
             margin: 0 0 5px 0;
             border: rgb(130, 130, 130) 2px dashed;
-            border-radius: 5%;
-            background-color: rgb(185, 185, 185);
+            border-radius: 1rem;
+            background-color: #b9b9b9;
             width: 95%;
-            height: 50%;
+            grid-column: 2;
+            grid-row: 1;
+         }
+         #method-container {
+            grid-column: 1;
+            grid-row: 3;
+            width: 95%;
          }
          #method-options {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
             margin: 0 0 5px 0;
-            width: 95%;
          }
          .method {
-            height: 2rem;
+            height: 3rem;
             background-color: rgb(30, 30, 30);
-            border-radius: 7%;
+            border-radius: 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.8rem;
             color: white;
          }
          .method:hover {
@@ -92,16 +118,48 @@
          #api {
             width: fit-content;
             font-size: 1rem;
-            background-image: linear-gradient(to right, rgb(0, 250, 0), rgb(1, 150, 1), rgb(0, 50, 0));
-            font-weight: bold;
+            background-image: linear-gradient(to right, rgb(3, 143, 212), rgb(0, 0, 205));
             color: white;
             border: none;
-            border-radius: 10%;
+            border-radius: 1rem;
             padding: 0.5rem 1rem 0.5rem 1rem;
             font-size: 1.5rem;
+            grid-column: 2;
+            grid-row: 3;
          }
          #api:hover {
             cursor: pointer;
+         }
+         #analysis {
+            width: 95%;
+            grid-column: 2;
+            grid-row: 2;
+         }
+         #prob-bar {
+            background-color: black;
+            width: 100%;
+            height: 2rem;
+            border-radius: 1rem;
+            margin: 0 0 5px 0;
+            position: relative;
+         }
+         #prob-bar::before {
+            font-family: Varelmo;
+            box-sizing: border-box;
+            content: attr(data-prob);
+            background-color: blue;
+            height: 1.5rem;
+            width: calc(var(--width, 0) * 1%);
+            min-width: 2.5rem;
+            max-width: calc(100% - 0.5rem);
+            position: absolute;
+            margin: 0.25rem;
+            border-radius: 0.75rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 3px white;
          }
          @media(max-width: 1200px) {
             #function {
@@ -114,6 +172,9 @@
             #drop-area {
                   height: fit-content;
             }
+            #api {
+               margin: 0 0 5px 0;
+            }
          }
       </style>
    </head>
@@ -125,24 +186,27 @@
          <div id="function">
             <textarea id="input-text" placeholder="Input your text or upload a text file."></textarea>
             <div id="drop-area">
-                  <img src="{% static 'textdetectorapp/4647438.png' %}" height="100rem" style="margin: -0.3rem 0 -0.7rem 0;">
-                  <button id="browse-files">Browse Files</button>
-                  <input id="hidden-upload-button" type="file" hidden="">
-                  <span style="color: white; font-weight: bold; margin: 0 0 0.5rem 0;">Drag or browse file to upload</span>
+               <img src="{% static 'textdetectorapp/4647438.png' %}" height="100rem" style="margin: -0.3rem 0 -0.7rem 0;">
+               <button id="browse-files">Browse Files</button>
+               <input id="hidden-upload-button" type="file" hidden="">
+               <span style="color: white; margin: 0 0 0.5rem 0;">Drag or browse file to upload</span>
             </div>
-            <div id="method-options">
+            <div id="method-container">
+               <b>CHOOSE A METHOD:</b>
+               <div id="method-options">
                   <div class="method">OpenAI Detector</div>
                   <div class="method">ChatGPT Detector</div>
                   <div class="method">LM Detector</div>
+               </div>
             </div>
-            <div>
-                  <button id="api">Analyze</button>
-                  <div id="result"></div>
-                  <div id="message"></div>
+            <button id="api">ANALYZE</button>
+            <div id="analysis">
+               <div id="prob-bar" data-prob="0%"></div>
+               <div id="result"></div>
+               <div id="message"></div>
             </div>
          </div>
       </main>
-      <footer></footer>
       <script>
          const body = document.querySelector('body')
          let inputText = document.getElementById('input-text')
@@ -195,7 +259,7 @@
                   }
                   selectedMethodDiv = this.element
                   selectedMethodDiv.style.backgroundColor = 'black'
-                  selectedMethodDiv.style.boxShadow = 'green 1px 1px 10px 1px'
+                  selectedMethodDiv.style.boxShadow = 'cyan 1px 1px 10px 1px'
             }
          }
 
@@ -212,8 +276,10 @@
          //SUBMIT REQUEST
          let button = document.getElementById('api')
          let result = document.getElementById('result')
+         const probBar = document.getElementById('prob-bar')
          function displayResult(prob, method) {
-            result.textContent = 'Probability: ' + prob * 100 + '%'
+            let percentage = prob * 100
+            result.textContent = 'Probability: ' + percentage.toFixed(3) + '%'
             result.style.color = 'black'
             if(prob >= 0.5) {
                   message.textContent = 'Your text is probably generated by an AI'
@@ -222,6 +288,19 @@
             }
             console.log(method)
          }
+
+         function displayProbBar(prob) {
+            let percentageMax = prob * 100
+            let percentage = 0
+            const interval = setInterval(function() {
+               percentage += 0.1
+               probBar.style.setProperty('--width', percentage)
+               probBar.setAttribute('data-prob', percentage.toFixed(1) + '%')
+               if(percentage >= percentageMax) {
+                  clearInterval(interval)
+               }
+            }, 1)
+            }
 
          function fetchAPI() {
             let input = inputText.value
@@ -238,7 +317,10 @@
                   body: JSON.stringify(object),
             })
             .then(res => res.json())
-            .then(data => displayResult(data[0], data[1]))
+            .then(data => {
+               displayResult(data[0], data[1])
+               displayProbBar(data[0])
+            })
          }
 
          function buttonClickHandler() {

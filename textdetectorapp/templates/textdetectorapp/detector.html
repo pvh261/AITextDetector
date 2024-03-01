@@ -11,21 +11,18 @@
          }
          @font-face {
             font-family: VanillaExtract;
-            src: url("{% static 'textdetectorapp/VanillaExtractRegular.ttf' %}");
+            src: url("{% static 'textdetectorapp/vanilla-extract.ttf' %}");
          }
          * {
             font-family: VanillaExtract;
             font-weight: bolder;
          }
          body {
-            background-image: url("{% static 'textdetectorapp/blue-concrete-texture.jpg' %}");
-            background-size: cover;
             height: 100vh;
-            background-repeat: no-repeat;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            margin: 0;
          }
          main {
             height: fit-content;
@@ -34,25 +31,32 @@
             justify-content: center;
             margin: 5rem 0 0 0;
          }
-         header {
+         #title {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+         }
+         #title-text {
             font-size: 5rem;
             font-family: Varelmo;
-            background-image: linear-gradient(white, rgb(0, 137, 205));
-            -webkit-background-clip: text;
-            color: transparent;
-            box-shadow: cyan 1px 1px 5px 1px;
-            margin: 0 0 1rem 0;
+            border-bottom: 0.5rem solid black;
+            padding: 0 0 0 1rem;
+         }
+         #content {
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
          }
          #function {
             border-radius: 2rem;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: 1fr 0.5fr 0.25fr;
-            box-shadow: cyan 1px 1px 10px 1px;
-            width: 50%;
+            box-shadow: cyan 1px 1px 10px 10px;
             padding: 1.5rem;
-            width: 955px;
-            background-image: linear-gradient(rgb(255, 255, 255), rgb(162, 255, 253))
+            background-color: white;
+            width: 80%;
          }
          #input-text {
             width: 95%;
@@ -111,6 +115,7 @@
             align-items: center;
             font-size: 0.8rem;
             color: white;
+            padding: 0 5px 0 5px;
          }
          .method:hover {
             cursor: pointer;
@@ -162,12 +167,15 @@
             text-shadow: 0 0 3px white;
          }
          @media(max-width: 1200px) {
+            body {
+               grid-template-columns: 1fr;
+            }
             #function {
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  width: 50%;
-                  min-width: 500px;
+               display: flex;
+               flex-direction: column;
+               align-items: center;
+               width: 50%;
+               min-width: 500px;
             }
             #drop-area {
                   height: fit-content;
@@ -175,18 +183,25 @@
             #api {
                margin: 0 0 5px 0;
             }
+            #title {
+               justify-content: center;
+            }
+            #title-text {
+               padding: 0;
+               border-bottom: none;
+            }
          }
       </style>
    </head>
    <body>
-      <header>
-         AI TEXT DETECTOR
-      </header>
-      <main>
+      <div id="title">
+         <span id="title-text">AI TEXT DETECTOR</span>
+      </div>
+      <div id="content">
          <div id="function">
             <textarea id="input-text" placeholder="Input your text or upload a text file."></textarea>
             <div id="drop-area">
-               <img src="{% static 'textdetectorapp/4647438.png' %}" height="100rem" style="margin: -0.3rem 0 -0.7rem 0;">
+               <img src="{% static 'textdetectorapp/upload-icon.png' %}" height="100rem" style="margin: -0.3rem 0 -0.7rem 0;">
                <button id="browse-files">Browse Files</button>
                <input id="hidden-upload-button" type="file" hidden="">
                <span style="color: white; margin: 0 0 0.5rem 0;">Drag or browse file to upload</span>
@@ -206,7 +221,7 @@
                <div id="message"></div>
             </div>
          </div>
-      </main>
+      </div>
       <script>
          const body = document.querySelector('body')
          let inputText = document.getElementById('input-text')
